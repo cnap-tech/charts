@@ -1,0 +1,128 @@
+# Image configuration
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: ''
+
+imagePullSecrets: []
+
+# Deployment
+replicaCount: 1
+nameOverride: ''
+fullnameOverride: ''
+
+# Container config
+container:
+  # Ports to expose on the container
+  # Format:
+  # - name: http
+  #   containerPort: 80
+  #   protocol: TCP
+  ports: []
+  env: []
+  command: []
+  args: []
+
+# Health checks
+healthChecks:
+  liveness:
+    enabled: false
+    type: httpGet
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    enabled: false
+    type: httpGet
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# Service
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+
+# Gateway API (HTTPRoute)
+gateway:
+  enabled: false
+  annotations: {}
+  # Reference to existing Gateway(s)
+  parentRefs:
+    - name: gateway
+      namespace: gateway-system
+  # Hostnames to match
+  hostnames:
+    - example.com
+  # HTTP routing rules
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+  # Cloudflare-specific (optional)
+  # Set provider: cloudflare to use Cloudflare Tunnels
+  # Requires: GatewayClass with controllerName: github.com/pl4nty/cloudflare-kubernetes-gateway
+  provider: '' # Options: '', 'cloudflare'
+
+# Resources
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Autoscaling
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+# Storage
+volumes: []
+volumeMounts: []
+
+# ServiceAccount
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ''
+
+# Security
+podSecurityContext:
+  fsGroup: 2000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Pod config
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Advanced
+sidecars: []
+initContainers: []
