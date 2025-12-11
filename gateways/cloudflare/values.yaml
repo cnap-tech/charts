@@ -18,18 +18,18 @@ cloudflare:
 controller:
   # Enable controller deployment (disable if using standalone installation)
   enabled: true
-  
+
   # Image configuration
   image:
     # Original: ghcr.io/pl4nty/cloudflare-kubernetes-gateway
     # Fork with improvements: ghcr.io/lwijnsma/cloudflare-kubernetes-gateway
     repository: ghcr.io/pl4nty/cloudflare-kubernetes-gateway
-    tag: ''  # Defaults to appVersion
+    tag: '' # Defaults to appVersion
     pullPolicy: IfNotPresent
-  
+
   # Controller namespace (where controller runs)
   namespace: cloudflare-gateway
-  
+
   # Resource limits
   resources:
     limits:
@@ -38,16 +38,16 @@ controller:
     requests:
       cpu: 10m
       memory: 64Mi
-  
+
   # Replica count
   replicas: 1
-  
+
   # Service account
   serviceAccount:
     create: true
     name: ''
     annotations: {}
-  
+
   # Pod security context
   securityContext:
     runAsNonRoot: true
@@ -67,9 +67,9 @@ gateway:
   enabled: true
   # Gateway name
   name: cloudflare-gateway
-  # Gateway namespace (can differ from controller namespace)
-  namespace: ''  # Defaults to release namespace
-  
+  # NOTE: Namespace is controlled by Helm release namespace (namespace agnostic)
+  # Set via ArgoCD destination.namespace or helm install --namespace
+
   # Listeners
   listeners:
     - name: http
@@ -79,12 +79,12 @@ gateway:
     # - name: https
     #   protocol: HTTPS
     #   port: 443
-  
+
   # Infrastructure config (for standalone cloudflared)
   infrastructure:
     # Disable built-in cloudflared deployment per Gateway
     disableDeployment: false
-  
+
   # Labels and annotations
   labels: {}
   annotations: {}
@@ -107,4 +107,3 @@ rbac:
 # Name overrides
 nameOverride: ''
 fullnameOverride: ''
-

@@ -53,10 +53,10 @@ Controller namespace
 {{- end }}
 
 {{/*
-Gateway namespace
+Gateway namespace - always uses release namespace (namespace agnostic)
 */}}
 {{- define "gateway-cloudflare.gatewayNamespace" -}}
-{{- .Values.gateway.namespace | default .Release.Namespace }}
+{{- .Release.Namespace }}
 {{- end }}
 
 {{/*
