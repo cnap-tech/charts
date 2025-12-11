@@ -1,0 +1,91 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "httproute.fullname" . }}
+  labels:
+    {{- include "httproute.labels" . | nindent 4 }}
+    {{- with .Values.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    - name: {{ required "parentRef.name is required" .Values.parentRef.name }}
+      {{- if .Values.parentRef.namespace }}
+      namespace: {{ .Values.parentRef.namespace }}
+      {{- end }}
+      {{- if .Values.parentRef.sectionName }}
+      sectionName: {{ .Values.parentRef.sectionName }}
+      {{- end }}
+  {{- with .Values.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    {{- range .Values.rules }}
+    - matches:
+        {{- range .matches }}
+        - path:
+            type: {{ .path.type | default "PathPrefix" }}
+            value: {{ .path.value | default "/" }}
+          {{- with .headers }}
+          headers:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .queryParams }}
+          queryParams:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .method }}
+          method: {{ . }}
+          {{- end }}
+        {{- end }}
+      {{- with .filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - name: {{ required "backendRef.name is required" $.Values.backendRef.name }}
+          {{- if $.Values.backendRef.namespace }}
+          namespace: {{ $.Values.backendRef.namespace }}
+          {{- end }}
+          port: {{ $.Values.backendRef.port | default 80 }}
+          {{- if $.Values.backendRef.weight }}
+          weight: {{ $.Values.backendRef.weight }}
+          {{- end }}
+        {{- range $.Values.additionalBackendRefs }}
+        - name: {{ .name }}
+          {{- if .namespace }}
+          namespace: {{ .namespace }}
+          {{- end }}
+          port: {{ .port | default 80 }}
+          {{- if .weight }}
+          weight: {{ .weight }}
+          {{- end }}
+        {{- end }}
+    {{- end }}
+    {{- if not .Values.rules }}
+    - backendRefs:
+        - name: {{ required "backendRef.name is required" .Values.backendRef.name }}
+          {{- if .Values.backendRef.namespace }}
+          namespace: {{ .Values.backendRef.namespace }}
+          {{- end }}
+          port: {{ .Values.backendRef.port | default 80 }}
+          {{- if .Values.backendRef.weight }}
+          weight: {{ .Values.backendRef.weight }}
+          {{- end }}
+        {{- range .Values.additionalBackendRefs }}
+        - name: {{ .name }}
+          {{- if .namespace }}
+          namespace: {{ .namespace }}
+          {{- end }}
+          port: {{ .port | default 80 }}
+          {{- if .weight }}
+          weight: {{ .weight }}
+          {{- end }}
+        {{- end }}
+    {{- end }}
+

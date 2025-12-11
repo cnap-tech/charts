@@ -1,0 +1,17 @@
+apiVersion: v2
+name: gateway-cilium
+description: Cilium Gateway for Kubernetes Gateway API (Host Network Mode)
+type: application
+version: 1.0.0
+appVersion: '1.0.0'
+keywords:
+  - gateway-api
+  - cilium
+  - ebpf
+  - ingress
+  - host-network
+home: https://cnap.tech
+sources:
+  - https://github.com/cnap-tech/charts
+  - https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/
+

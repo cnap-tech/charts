@@ -1,0 +1,67 @@
+# HTTPRoute configuration
+# Reference: https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1.HTTPRoute
+
+# Name override (defaults to release name)
+nameOverride: ''
+fullnameOverride: ''
+
+# Reference to parent Gateway (required)
+parentRef:
+  name: ''          # Required: Gateway name
+  namespace: ''     # Required: Gateway namespace
+  sectionName: ''   # Optional: Specific listener name
+
+# Hostnames to match (at least one required for external access)
+hostnames: []
+  # - myapp.example.com
+  # - api.example.com
+
+# Backend service reference (required)
+backendRef:
+  name: ''          # Required: Service name
+  namespace: ''     # Optional: defaults to release namespace
+  port: 80          # Required: Service port
+  weight: 1         # Optional: weight for traffic splitting
+
+# Additional backend refs for traffic splitting (optional)
+additionalBackendRefs: []
+  # - name: canary-service
+  #   port: 80
+  #   weight: 10
+
+# Routing rules
+rules:
+  - matches:
+      - path:
+          type: PathPrefix   # PathPrefix, Exact, or RegularExpression
+          value: /
+    # Optional: Header matching
+    # headers:
+    #   - name: x-version
+    #     value: v2
+    # Optional: Query parameter matching
+    # queryParams:
+    #   - name: debug
+    #     value: 'true'
+
+# Request/Response filters (optional)
+filters: []
+  # - type: RequestHeaderModifier
+  #   requestHeaderModifier:
+  #     add:
+  #       - name: x-custom-header
+  #         value: custom-value
+  # - type: RequestRedirect
+  #   requestRedirect:
+  #     scheme: https
+  #     statusCode: 301
+
+# Timeouts (optional, requires Gateway API v1.0+)
+timeouts:
+  request: ''       # e.g., '30s'
+  backendRequest: '' # e.g., '30s'
+
+# Labels and annotations
+labels: {}
+annotations: {}
+

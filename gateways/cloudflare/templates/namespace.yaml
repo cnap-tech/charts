@@ -1,0 +1,9 @@
+{{- if .Values.controller.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ include "gateway-cloudflare.controllerNamespace" . }}
+  labels:
+    {{- include "gateway-cloudflare.labels" . | nindent 4 }}
+{{- end }}
+

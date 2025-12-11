@@ -1,0 +1,10 @@
+{{- $ns := include "gateway-cilium.gatewayNamespace" . -}}
+{{- if ne $ns "default" }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $ns }}
+  labels:
+    {{- include "gateway-cilium.labels" . | nindent 4 }}
+{{- end }}
+
