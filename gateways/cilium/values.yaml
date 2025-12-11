@@ -11,13 +11,26 @@ gateway:
   # Gateway name
   name: cilium-gateway
   # Gateway namespace
-  namespace: ''  # Defaults to release namespace
-  
+  namespace: '' # Defaults to release namespace
+
   # GatewayClass name (Cilium auto-creates this when gatewayAPI.enabled=true)
   gatewayClassName: cilium
-  
+
   # Listeners - bind to host network ports
   # In host network mode, these ports bind directly to node IPs
+  #
+  # NOTE: HTTPS listener requires TLS certificates. To enable HTTPS, add:
+  #   - name: https
+  #     protocol: HTTPS
+  #     port: 443
+  #     tls:
+  #       mode: Terminate  # or Passthrough
+  #       certificateRefs:
+  #         - name: my-tls-secret
+  #           namespace: gateway-system
+  #     allowedRoutes:
+  #       namespaces:
+  #         from: All
   listeners:
     - name: http
       protocol: HTTP
@@ -25,21 +38,7 @@ gateway:
       allowedRoutes:
         namespaces:
           from: All
-    - name: https
-      protocol: HTTPS
-      port: 443
-      # TLS termination at the gateway
-      tls:
-        mode: Terminate
-        # Reference a TLS secret (optional - create your own or use cert-manager)
-        certificateRefs: []
-        # Example:
-        # - name: gateway-tls
-        #   namespace: gateway-system
-      allowedRoutes:
-        namespaces:
-          from: All
-  
+
   # Labels and annotations
   labels: {}
   annotations: {}
@@ -47,4 +46,3 @@ gateway:
 # Name overrides
 nameOverride: ''
 fullnameOverride: ''
-

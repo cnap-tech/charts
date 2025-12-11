@@ -25,13 +25,19 @@ spec:
       {{- if .hostname }}
       hostname: {{ .hostname | quote }}
       {{- end }}
+      {{- /* Only include tls block if mode is Passthrough OR certificateRefs are provided */}}
       {{- if .tls }}
+      {{- $mode := .tls.mode | default "Terminate" }}
+      {{- $hasCerts := and .tls.certificateRefs (gt (len .tls.certificateRefs) 0) }}
+      {{- $isPassthrough := eq $mode "Passthrough" }}
+      {{- if or $isPassthrough $hasCerts }}
       tls:
-        mode: {{ .tls.mode | default "Terminate" }}
-        {{- if .tls.certificateRefs }}
+        mode: {{ $mode }}
+        {{- if $hasCerts }}
         certificateRefs:
           {{- toYaml .tls.certificateRefs | nindent 10 }}
         {{- end }}
+      {{- end }}
       {{- end }}
       {{- if .allowedRoutes }}
       allowedRoutes:
