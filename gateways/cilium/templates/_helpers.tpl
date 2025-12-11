@@ -49,13 +49,9 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Gateway namespace - defaults to release namespace
+Gateway namespace - always uses release namespace (namespace agnostic)
 */}}
 {{- define "gateway-cilium.gatewayNamespace" -}}
-{{- if .Values.gateway.namespace }}
-{{- .Values.gateway.namespace }}
-{{- else }}
 {{- .Release.Namespace }}
-{{- end }}
 {{- end }}
 

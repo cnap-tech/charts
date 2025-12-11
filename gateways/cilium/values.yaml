@@ -10,8 +10,8 @@
 gateway:
   # Gateway name
   name: cilium-gateway
-  # Gateway namespace
-  namespace: '' # Defaults to release namespace
+  # NOTE: Namespace is controlled by Helm release namespace (namespace agnostic)
+  # Set via ArgoCD destination.namespace or helm install --namespace
 
   # GatewayClass name (Cilium auto-creates this when gatewayAPI.enabled=true)
   gatewayClassName: cilium

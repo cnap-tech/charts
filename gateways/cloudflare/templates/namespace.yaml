@@ -5,5 +5,20 @@ metadata:
   name: {{ include "gateway-cloudflare.controllerNamespace" . }}
   labels:
     {{- include "gateway-cloudflare.labels" . | nindent 4 }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+{{- end }}
+---
+{{- $gatewayNs := include "gateway-cloudflare.gatewayNamespace" . -}}
+{{- if and $gatewayNs (ne $gatewayNs "default") }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $gatewayNs }}
+  labels:
+    {{- include "gateway-cloudflare.labels" . | nindent 4 }}
+  annotations:
+    # Ensure namespace is created before Gateway resource
+    argocd.argoproj.io/sync-wave: "-1"
 {{- end }}
 
