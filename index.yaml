@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  app:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-12-15T14:16:42.077706072Z"
+    description: Generic Helm chart for deploying Docker containers
+    digest: 8c60dda6f734a7f4fda14b11bf09dc57dedc239aa1bb73ca83dee2ccdf9cbd9c
+    name: app
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/app-1.0.0/app-1.0.0.tgz
+    version: 1.0.0
+generated: "2025-12-15T14:16:42.077744153Z"
