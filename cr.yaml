@@ -12,7 +12,11 @@ pages-branch: gh-pages
 charts-dir: .
 
 # Whether to package charts that have no changes
-package-all: false
+# Set to true to package all charts, false to only package charts with version changes
+# Note: chart-releaser-action should recursively find all Chart.yaml files in subdirectories
+# IMPORTANT: Set to true for initial release to package all charts, then set to false
+# to only package charts with version changes on subsequent runs
+package-all: true
 
 # Whether to make the latest release the default
 make-release: true

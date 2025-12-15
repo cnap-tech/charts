@@ -24,7 +24,12 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Run chart-releaser
+      - name: Debug - List all Chart.yaml files
+        run: |
+          echo "Finding all Chart.yaml files:"
+          find . -name "Chart.yaml" -type f
+
+      - name: Run chart-releaser for all charts
         uses: helm/chart-releaser-action@v1.6.0
         with:
           charts_dir: .

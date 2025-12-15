@@ -7,7 +7,7 @@ This repository contains Helm charts published as a Helm repository via GitHub P
 Add this repository to Helm:
 
 ```bash
-helm repo add cnap-tech https://cnap-tech.github.io/charts
+helm repo add cnap-tech https://charts.cnap.tech
 helm repo update
 ```
 
