@@ -1,11 +1,28 @@
 # [CNAP.tech](https://cnap.tech) Helm Charts
 
+This repository contains Helm charts published as a Helm repository via GitHub Pages.
+
+## Helm Repository
+
+Add this repository to Helm:
+
+```bash
+helm repo add cnap-tech https://cnap-tech.github.io/charts
+helm repo update
+```
+
+Then install charts:
+
+```bash
+helm install myapp cnap-tech/app
+helm install cloudflare-gateway cnap-tech/gateway-cloudflare
+```
+
 ## Charts
 
 | Chart | Description | Use Case |
 |-------|-------------|----------|
-| [`app/`](app/) | Generic app deployment | Deploy any container image |
-| [`httproute/`](httproute/) | HTTPRoute resource | Route traffic to services via Gateway API |
+| [`app/`](app/) | Generic app deployment | Deploy any container image with optional HTTPRoute |
 | [`gateways/cloudflare/`](gateways/cloudflare/) | Cloudflare Tunnel Gateway | Zero-trust access via Cloudflare |
 
 ## Generic App Chart
@@ -30,7 +47,7 @@ helm template myapp app \
 
 - Any Docker container deployment
 - Service types: ClusterIP, NodePort, LoadBalancer
-- Gateway API (HTTPRoute) support
+- Gateway API (HTTPRoute) support with `useDefaultGateways: All`
 - Cloudflare Tunnels integration
 - Configurable health checks
 - HPA support
@@ -38,34 +55,20 @@ helm template myapp app \
 - Init containers & sidecars
 - Security contexts
 
-See [app/README.md](app/README.md) for full documentation.
+### HTTPRoute Configuration
 
-## HTTPRoute Chart
-
-Location: [`httproute/`](httproute/)
-
-Creates an HTTPRoute resource for Kubernetes Gateway API. Used to route external traffic to services through a Gateway.
-
-### Quick Start
+The app chart includes optional HTTPRoute support. By default, it uses `useDefaultGateways: All` to automatically bind to all default Gateways in the cluster (following Gateway API v1.4 best practices), but this can be configured via values.
 
 ```bash
-helm template my-route httproute \
-  --set parentRef.name=my-gateway \
-  --set parentRef.namespace=gateway-system \
-  --set hostnames[0]=myapp.example.com \
-  --set backendRef.name=my-service \
-  --set backendRef.port=8080
+helm template myapp app \
+  --set image.repository=myregistry/myapp \
+  --set image.tag=1.0.0 \
+  --set container.port=8080 \
+  --set httpRoute.enabled=true \
+  --set httpRoute.hostnames[0]=myapp.example.com
 ```
 
-### Features
-
-- Gateway API HTTPRoute resource
-- Path, header, and query parameter matching
-- Traffic splitting (canary deployments)
-- Request/response filters
-- Multiple backend support
-
-See [httproute/README.md](httproute/README.md) for full documentation.
+See [app/README.md](app/README.md) for full documentation.
 
 ## Cloudflare Gateway Chart
 

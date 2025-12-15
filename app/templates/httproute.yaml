@@ -1,49 +1,84 @@
-{{- if .Values.gateway.enabled -}}
+{{- if .Values.httpRoute.enabled -}}
+{{- $fullName := include "app.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: {{ include "app.fullname" . }}
+  name: {{ $fullName }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
-  {{- with .Values.gateway.annotations }}
+  {{- with .Values.httpRoute.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- with .Values.gateway.parentRefs }}
-  parentRefs:
-    {{- toYaml . | nindent 4 }}
+  {{- if .Values.httpRoute.useDefaultGateways }}
+  # Use default gateways - automatically binds to all Gateways with defaultScope: All
+  useDefaultGateways: {{ .Values.httpRoute.useDefaultGateways }}
   {{- end }}
-  {{- with .Values.gateway.hostnames }}
+  {{- if .Values.httpRoute.parentRefs }}
+  parentRefs:
+    {{- toYaml .Values.httpRoute.parentRefs | nindent 4 }}
+  {{- end }}
+  {{- with .Values.httpRoute.hostnames }}
   hostnames:
     {{- toYaml . | nindent 4 }}
   {{- end }}
   rules:
-    {{- range .Values.gateway.rules }}
+    {{- if .Values.httpRoute.rules }}
+    {{- range .Values.httpRoute.rules }}
     - matches:
         {{- range .matches }}
         - path:
             type: {{ .path.type | default "PathPrefix" }}
-            value: {{ .path.value }}
-        {{- with .headers }}
+            value: {{ .path.value | default "/" }}
+          {{- with .headers }}
           headers:
             {{- toYaml . | nindent 12 }}
-        {{- end }}
-        {{- with .queryParams }}
+          {{- end }}
+          {{- with .queryParams }}
           queryParams:
             {{- toYaml . | nindent 12 }}
-        {{- end }}
+          {{- end }}
+          {{- with .method }}
+          method: {{ . }}
+          {{- end }}
         {{- end }}
       {{- with .filters }}
       filters:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       backendRefs:
-        - name: {{ include "app.fullname" $ }}
-          port: {{ $.Values.service.port }}
+        - name: {{ $fullName }}
+          port: {{ $svcPort }}
           {{- with .weight }}
           weight: {{ . }}
           {{- end }}
+        {{- range $.Values.httpRoute.additionalBackendRefs }}
+        - name: {{ .name }}
+          {{- if .namespace }}
+          namespace: {{ .namespace }}
+          {{- end }}
+          port: {{ .port | default $svcPort }}
+          {{- if .weight }}
+          weight: {{ .weight }}
+          {{- end }}
+        {{- end }}
+    {{- end }}
+    {{- else }}
+    # Default rule: route all traffic to the service
+    - backendRefs:
+        - name: {{ $fullName }}
+          port: {{ $svcPort }}
+        {{- range .Values.httpRoute.additionalBackendRefs }}
+        - name: {{ .name }}
+          {{- if .namespace }}
+          namespace: {{ .namespace }}
+          {{- end }}
+          port: {{ .port | default $svcPort }}
+          {{- if .weight }}
+          weight: {{ .weight }}
+          {{- end }}
+        {{- end }}
     {{- end }}
 {{- end }}
-

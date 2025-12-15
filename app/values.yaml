@@ -53,26 +53,48 @@ service:
   annotations: {}
 
 # Gateway API (HTTPRoute)
-gateway:
+# The backend port is automatically taken from service.port
+httpRoute:
   enabled: false
   annotations: {}
-  # Reference to existing Gateway(s)
-  parentRefs:
-    - name: gateway
-      namespace: gateway-system
-  # Hostnames to match
-  hostnames:
-    - example.com
-  # HTTP routing rules
-  rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-  # Cloudflare-specific (optional)
-  # Set provider: cloudflare to use Cloudflare Tunnels
-  # Requires: GatewayClass with controllerName: github.com/pl4nty/cloudflare-kubernetes-gateway
-  provider: '' # Options: '', 'cloudflare'
+  # Use default gateways - automatically binds to all Gateways with defaultScope: All
+  # Set to "All" to use all default gateways, or leave empty/null to use parentRefs instead
+  useDefaultGateways: All
+  # Reference to specific Gateway(s) (used when useDefaultGateways is not set)
+  parentRefs: []
+    # - name: gateway
+    #   namespace: gateway-system
+    #   sectionName: http
+  # Hostnames to match (optional, at least one required for external access)
+  hostnames: []
+    # - example.com
+    # - api.example.com
+  # Additional backend refs for traffic splitting (optional)
+  additionalBackendRefs: []
+    # - name: canary-service
+    #   namespace: default
+    #   port: 80
+    #   weight: 10
+  # HTTP routing rules (optional, defaults to routing all traffic to service)
+  rules: []
+    # - matches:
+    #     - path:
+    #         type: PathPrefix  # PathPrefix, Exact, or RegularExpression
+    #         value: /
+    #       headers:
+    #         - name: x-version
+    #           value: v2
+    #       queryParams:
+    #         - name: debug
+    #           value: 'true'
+    #       method: GET
+    #   filters:
+    #     - type: RequestHeaderModifier
+    #       requestHeaderModifier:
+    #         add:
+    #           - name: x-custom-header
+    #             value: custom-value
+    #   weight: 100
 
 # Resources
 resources:

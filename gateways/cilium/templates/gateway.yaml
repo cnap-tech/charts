@@ -37,7 +37,7 @@ spec:
         certificateRefs:
           {{- toYaml .tls.certificateRefs | nindent 10 }}
         {{- end }}
-      {{- end }}
+        {{- end }}
       {{- end }}
       {{- if .allowedRoutes }}
       allowedRoutes:

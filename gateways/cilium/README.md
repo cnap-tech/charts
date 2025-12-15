@@ -74,3 +74,7 @@ spec:
 - [Cilium Gateway API Documentation](https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/)
 - [Host Network Mode](https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/#host-network-mode)
 - [Bind to Privileged Ports](https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/#bind-to-privileged-port)
+
+
+
+

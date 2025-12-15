@@ -33,18 +33,11 @@ service:
   type: ClusterIP
   port: 80
 
-gateway:
+httpRoute:
   enabled: true
-  parentRefs:
-    - name: shared-gateway
-      namespace: gateway-system
   hostnames:
     - myapp.example.com
-  rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
+  # Rules are optional - defaults to routing all traffic to service
 
 resources:
   limits:
@@ -74,30 +67,38 @@ autoscaling:
 
 ## Gateway API
 
-Basic HTTPRoute:
+The HTTPRoute can use `useDefaultGateways: All` (default) to automatically bind to all default Gateways in the cluster, or use `parentRefs` to reference specific Gateways.
+
+Basic HTTPRoute with default gateways:
 
 ```yaml
-gateway:
+httpRoute:
   enabled: true
-  parentRefs:
-    - name: shared-gateway
-      namespace: gateway-system
+  useDefaultGateways: All  # Default - binds to all Gateways with defaultScope: All
   hostnames:
     - myapp.example.com
-  rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
+  # Rules are optional - defaults to routing all traffic to service
+```
+
+Using specific parent gateways:
+
+```yaml
+httpRoute:
+  enabled: true
+  # useDefaultGateways: null  # Leave empty to use parentRefs instead
+  parentRefs:
+    - name: gateway
+      namespace: gateway-system
+      sectionName: http
+  hostnames:
+    - myapp.example.com
 ```
 
 Multiple paths:
 
 ```yaml
-gateway:
+httpRoute:
   enabled: true
-  parentRefs:
-    - name: shared-gateway
   hostnames:
     - myapp.example.com
   rules:
@@ -114,10 +115,8 @@ gateway:
 Header-based routing:
 
 ```yaml
-gateway:
+httpRoute:
   enabled: true
-  parentRefs:
-    - name: shared-gateway
   rules:
     - matches:
         - path:
@@ -185,15 +184,11 @@ spec:
       name: http
 ```
 
-6. Deploy your app with gateway enabled:
+6. Deploy your app with HTTPRoute enabled:
 
 ```yaml
-gateway:
+httpRoute:
   enabled: true
-  provider: cloudflare
-  parentRefs:
-    - name: shared-gateway
-      namespace: gateway-system
   hostnames:
     - myapp.example.com
   rules:

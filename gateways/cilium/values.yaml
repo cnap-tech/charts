@@ -12,10 +12,10 @@ gateway:
   name: cilium-gateway
   # NOTE: Namespace is controlled by Helm release namespace (namespace agnostic)
   # Set via ArgoCD destination.namespace or helm install --namespace
-
+  
   # GatewayClass name (Cilium auto-creates this when gatewayAPI.enabled=true)
   gatewayClassName: cilium
-
+  
   # Listeners - bind to host network ports
   # In host network mode, these ports bind directly to node IPs
   #
@@ -38,7 +38,7 @@ gateway:
       allowedRoutes:
         namespaces:
           from: All
-
+  
   # Labels and annotations
   labels: {}
   annotations: {}
