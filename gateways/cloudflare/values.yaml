@@ -1,7 +1,19 @@
 # Cloudflare Gateway Configuration
 # Reference: https://github.com/pl4nty/cloudflare-kubernetes-gateway
 
-# Cloudflare credentials (required)
+# CNAP proxy credentials (set by CNAP when deploying via ArgoCD)
+# When set, these take precedence over `cloudflare.*` values.
+credentials:
+  # Cloudflare Account ID
+  accountId: ''
+  # Proxy token (bearer token for CNAP proxy, NOT a raw CF API token)
+  token: ''
+  # CNAP proxy base URL (e.g., https://dash.cnap.tech/api/cloudflare)
+  apiBaseUrl: ''
+  # Configuration mode: 'local' (CNAP-managed) or 'remote' (customer's CF account)
+  configMode: ''
+
+# Standalone Cloudflare credentials (used when NOT deployed through CNAP proxy)
 cloudflare:
   # Your Cloudflare account ID (found in dashboard URL)
   accountId: ''
@@ -21,10 +33,8 @@ controller:
 
   # Image configuration
   image:
-    # Original: ghcr.io/pl4nty/cloudflare-kubernetes-gateway
-    # Fork with improvements: ghcr.io/lwijnsma/cloudflare-kubernetes-gateway
-    repository: ghcr.io/pl4nty/cloudflare-kubernetes-gateway
-    tag: '' # Defaults to appVersion
+    repository: ghcr.io/cnap-tech/cloudflare-kubernetes-gateway
+    tag: 'latest'
     pullPolicy: IfNotPresent
 
   # Controller namespace (where controller runs)
