@@ -1,7 +1,7 @@
 # Cloudflare Gateway Configuration
 # Reference: https://github.com/pl4nty/cloudflare-kubernetes-gateway
 
-# CNAP proxy credentials (set by CNAP when deploying via ArgoCD)
+# CNAP proxy credentials (set by CNAP when deploying gateways)
 # When set, these take precedence over `cloudflare.*` values.
 credentials:
   # Cloudflare Account ID
