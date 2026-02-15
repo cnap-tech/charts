@@ -49,6 +49,31 @@ spec:
               port: health
             initialDelaySeconds: 5
             periodSeconds: 10
+          env:
+            - name: ACCOUNT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gateway-cloudflare.secretName" . }}
+                  key: ACCOUNT_ID
+                  optional: true
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gateway-cloudflare.secretName" . }}
+                  key: TOKEN
+                  optional: true
+            - name: API_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gateway-cloudflare.secretName" . }}
+                  key: API_BASE_URL
+                  optional: true
+            - name: CONFIG_MODE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gateway-cloudflare.secretName" . }}
+                  key: CONFIG_MODE
+                  optional: true
           {{- with .Values.controller.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
