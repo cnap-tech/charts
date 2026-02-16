@@ -1,0 +1,21 @@
+OpenClaw is starting up.
+
+1. Check status:
+
+   kubectl get statefulset {{ include "openclaw.fullname" . }} -n {{ .Release.Namespace }}
+   kubectl logs -f {{ include "openclaw.fullname" . }}-0 -n {{ .Release.Namespace }}
+
+2. Get the gateway token:
+
+   kubectl get secret {{ include "openclaw.secretName" . }} -n {{ .Release.Namespace }} \
+     -o jsonpath='{.data.gatewayToken}' | base64 -d && echo
+
+3. Access the Control UI:
+
+   kubectl port-forward {{ include "openclaw.fullname" . }}-0 {{ .Values.gateway.port }}:{{ .Values.gateway.port }} -n {{ .Release.Namespace }}
+   # Then visit: http://localhost:{{ .Values.gateway.port }}
+
+{{- if not .Values.persistence.enabled }}
+
+WARNING: Persistence is DISABLED. All state will be lost on pod restart.
+{{- end }}

@@ -1,0 +1,18 @@
+apiVersion: v2
+name: openclaw
+description: Deploy OpenClaw AI agents on Kubernetes with production-ready defaults
+type: application
+version: 0.1.0
+appVersion: '2026.2.15'
+home: https://cnap.tech/selfhost/openclaw
+sources:
+  - https://github.com/cnap-tech/charts
+  - https://github.com/openclaw/openclaw
+keywords:
+  - ai
+  - assistant
+  - openclaw
+  - claude
+maintainers:
+  - name: CNAP
+    url: https://cnap.tech
