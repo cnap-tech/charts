@@ -77,6 +77,8 @@ jobs:
           owner="${GITHUB_REPOSITORY_OWNER}"
           repo="${GITHUB_REPOSITORY#*/}"
 
+          mkdir -p .cr-index
+
           cr index \
             --owner "$owner" \
             --git-repo "$repo" \
