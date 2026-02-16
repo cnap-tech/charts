@@ -41,7 +41,7 @@ jobs:
       # chart-releaser-action only discovers immediate children of charts_dir.
       # Our charts live in nested directories (app/, apps/openclaw/, gateways/*/),
       # so we find, package, and release them manually.
-      - name: Package and release charts
+      - name: Package all charts
         run: |
           charts=$(find . -name Chart.yaml -not -path './.git/*' -exec dirname {} \; | sort)
           echo "Found charts:"
@@ -50,38 +50,32 @@ jobs:
           mkdir -p .cr-release-packages
 
           for chart in $charts; do
-            name=$(helm show chart "$chart" | grep '^name:' | awk '{print $2}')
-            version=$(helm show chart "$chart" | grep '^version:' | awk '{print $2}')
-            tag="${name}-${version}"
+            echo "Packaging $chart"
+            helm package "$chart" -d .cr-release-packages
+          done
 
-            # Skip if release already exists
+      - name: Create GitHub releases for new charts
+        run: |
+          for pkg in .cr-release-packages/*.tgz; do
+            [ -f "$pkg" ] || { echo "No charts found"; exit 0; }
+            tag=$(basename "$pkg" .tgz)
+
             if gh release view "$tag" &>/dev/null; then
               echo "Skipping $tag (already released)"
               continue
             fi
 
-            echo "Packaging $chart → $tag"
-            helm package "$chart" -d .cr-release-packages
-          done
-
-          # Upload new packages as GitHub releases
-          for pkg in .cr-release-packages/*.tgz; do
-            [ -f "$pkg" ] || { echo "No new charts to release"; exit 0; }
-            tag=$(basename "$pkg" .tgz)
             echo "Creating release $tag"
             gh release create "$tag" "$pkg" --title "$tag" --generate-notes
           done
 
       - name: Update Helm repo index
         run: |
-          owner="${GITHUB_REPOSITORY_OWNER}"
-          repo="${GITHUB_REPOSITORY#*/}"
-
           mkdir -p .cr-index
 
           cr index \
-            --owner "$owner" \
-            --git-repo "$repo" \
+            --owner "${{ github.repository_owner }}" \
+            --git-repo "${GITHUB_REPOSITORY#*/}" \
             --pages-branch gh-pages \
             --push \
             --release-name-template '{{ .Name }}-{{ .Version }}'
