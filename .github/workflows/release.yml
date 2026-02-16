@@ -10,6 +10,10 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -38,8 +42,6 @@ jobs:
       # Our charts live in nested directories (app/, apps/openclaw/, gateways/*/),
       # so we find, package, and release them manually.
       - name: Package and release charts
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
           charts=$(find . -name Chart.yaml -not -path './.git/*' -exec dirname {} \; | sort)
           echo "Found charts:"
@@ -71,13 +73,10 @@ jobs:
           done
 
       - name: Update Helm repo index
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         run: |
           owner="${GITHUB_REPOSITORY_OWNER}"
           repo="${GITHUB_REPOSITORY#*/}"
 
-          # Merge new releases into existing index.yaml on gh-pages
           cr index \
             --owner "$owner" \
             --git-repo "$repo" \
