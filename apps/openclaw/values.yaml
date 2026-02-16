@@ -1,0 +1,186 @@
+# OpenClaw Helm Chart
+#
+# OpenClaw is a single-instance stateful application.
+# Do NOT set replicaCount > 1.
+
+image:
+  repository: ghcr.io/openclaw/openclaw
+  pullPolicy: IfNotPresent
+  # Overrides appVersion from Chart.yaml
+  tag: ''
+
+imagePullSecrets: []
+nameOverride: ''
+fullnameOverride: ''
+
+replicaCount: 1
+
+# Gateway configuration
+gateway:
+  # Binding mode: lan (all interfaces), loopback (localhost only)
+  bind: lan
+  # Gateway port (HTTP + WebSocket)
+  port: 18789
+  # Allow startup without complete configuration
+  allowUnconfigured: true
+  # Additional CLI arguments
+  extraArgs: []
+
+# OpenClaw configuration (rendered to openclaw.json via ConfigMap)
+# See: https://cnap.tech/selfhost/openclaw
+config:
+  # Create ConfigMap from inline config
+  create: true
+  # Use existing ConfigMap instead
+  existingConfigMap: ''
+  # openclaw.json content (structured YAML, rendered as JSON)
+  data:
+    gateway:
+      mode: local
+      auth:
+        mode: token
+      # Trust in-cluster reverse proxies (e.g., cloudflared, nginx)
+      # so X-Forwarded-For headers are accepted for client IP resolution.
+      trustedProxies:
+        - '10.0.0.0/8'
+        - '172.16.0.0/12'
+        - '192.168.0.0/16'
+      # Skip device pairing for Control UI connections that pass token auth.
+      # Required for reverse proxy setups where the browser connects through
+      # a tunnel (e.g., Cloudflare Tunnel) rather than directly to the pod.
+      controlUi:
+        dangerouslyDisableDeviceAuth: true
+    agents:
+      defaults:
+        workspace: /home/node/.openclaw/workspace
+        model:
+          primary: anthropic/claude-opus-4-6
+        maxConcurrent: 4
+        sandbox:
+          mode: 'off'
+
+# Auth provider API keys to inject.
+# Each provider creates an auth profile in openclaw.json and injects the
+# corresponding env var from the Secret.
+# Supported: anthropic, openai, openrouter, gemini
+auth:
+  providers: []
+
+# Secrets
+secrets:
+  # Create Secret from values (dev/testing only — use existingSecret in production)
+  create: true
+  # Reference an existing Secret instead
+  existingSecret: ''
+  # Secret data (only used when create: true)
+  # gatewayToken is auto-generated (64-char hex) if left empty.
+  data:
+    gatewayToken: ''
+
+# Persistence (required for production — stores config, sessions, workspace)
+persistence:
+  enabled: true
+  storageClass: ''
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  annotations: {}
+
+# Service
+service:
+  type: ClusterIP
+  port: 18789
+  annotations: {}
+
+# HTTPRoute (Gateway API)
+# Enable to expose OpenClaw via a Gateway API gateway.
+# Works with any Gateway API implementation (Cloudflare Tunnel, Cilium, Envoy, nginx, etc.)
+httpRoute:
+  enabled: false
+  annotations: {}
+  # parentRefs:
+  #   - name: my-gateway
+  #     namespace: default
+  hostnames: []
+  # - openclaw.example.com
+
+# Resources
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 2000m
+    memory: 2Gi
+
+# Security
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: false
+
+# Probes
+startupProbe:
+  enabled: true
+  tcpSocket:
+    port: gateway
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 30
+
+readinessProbe:
+  enabled: true
+  tcpSocket:
+    port: gateway
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+livenessProbe:
+  enabled: true
+  tcpSocket:
+    port: gateway
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# Lifecycle hooks
+lifecycle:
+  preStop:
+    exec:
+      command:
+        - sh
+        - -c
+        - 'rm -f /home/node/.openclaw/gateway.*.lock; sleep 5'
+
+# ServiceAccount
+serviceAccount:
+  create: true
+  automount: false
+  annotations: {}
+  name: ''
+
+# Pod configuration
+podAnnotations: {}
+podLabels: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Extension points
+initContainers: []
+extraContainers: []
+extraVolumes: []
+extraVolumeMounts: []

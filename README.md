@@ -16,14 +16,23 @@ Then install charts:
 ```bash
 helm install myapp cnap-tech/app
 helm install cloudflare-gateway cnap-tech/gateway-cloudflare
+helm install my-agent cnap-tech/openclaw
 ```
 
 ## Charts
+
+### Platform
 
 | Chart | Description | Use Case |
 |-------|-------------|----------|
 | [`app/`](app/) | Generic app deployment | Deploy any container image with optional HTTPRoute |
 | [`gateways/cloudflare/`](gateways/cloudflare/) | Cloudflare Tunnel Gateway | Zero-trust access via Cloudflare |
+
+### Apps
+
+| Chart | Description | Use Case |
+|-------|-------------|----------|
+| [`apps/openclaw/`](apps/openclaw/) | OpenClaw AI agent | Production-ready OpenClaw with reverse proxy support |
 
 ## Generic App Chart
 

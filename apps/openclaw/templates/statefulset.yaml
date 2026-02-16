@@ -1,0 +1,212 @@
+{{- $authMap := (include "openclaw.authMap" . | fromYaml) -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "openclaw.fullname" . }}
+  labels:
+    {{- include "openclaw.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "openclaw.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "openclaw.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.config.create }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if .Values.secrets.create }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "openclaw.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "openclaw.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        # Sync openclaw.json from ConfigMap to PVC (sha256-based, idempotent)
+        {{- if or .Values.config.create .Values.config.existingConfigMap }}
+        - name: init-config
+          image: {{ include "openclaw.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              SRC="/config/openclaw.json"
+              DST="/home/node/.openclaw/openclaw.json"
+              HASHFILE="/home/node/.openclaw/.openclaw.json.sha256"
+
+              mkdir -p /home/node/.openclaw
+              [ -f "$SRC" ] || { echo "ERROR: missing $SRC" >&2; exit 1; }
+
+              SRC_HASH="$(sha256sum "$SRC" | awk '{print $1}')"
+
+              if [ ! -f "$DST" ]; then
+                echo "Fresh install — writing initial config"
+                cp "$SRC" "$DST"
+                echo "$SRC_HASH" > "$HASHFILE"
+                exit 0
+              fi
+
+              OLD_HASH=""
+              [ -f "$HASHFILE" ] && OLD_HASH="$(cat "$HASHFILE" 2>/dev/null || true)"
+
+              if [ -z "$OLD_HASH" ] || [ "$OLD_HASH" != "$SRC_HASH" ]; then
+                echo "Config changed — updating"
+                cp "$DST" "$DST.bak" || true
+                cp "$SRC" "$DST"
+                echo "$SRC_HASH" > "$HASHFILE"
+              else
+                echo "Config unchanged — skipping"
+              fi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: data
+              mountPath: /home/node/.openclaw
+              subPath: openclaw-state
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- end }}
+        {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: openclaw
+          image: {{ include "openclaw.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - node
+            - dist/index.js
+            - gateway
+            - --bind
+            - {{ .Values.gateway.bind }}
+            - --port
+            - {{ .Values.gateway.port | quote }}
+            {{- if .Values.gateway.allowUnconfigured }}
+            - --allow-unconfigured
+            {{- end }}
+            {{- range .Values.gateway.extraArgs }}
+            - {{ . }}
+            {{- end }}
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: HOME
+              value: /home/node
+            - name: OPENCLAW_DISABLE_BONJOUR
+              value: '1'
+            - name: OPENCLAW_GATEWAY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openclaw.secretName" . }}
+                  key: gatewayToken
+            {{- range .Values.auth.providers }}
+            {{- $spec := (get $authMap .) }}
+            - name: {{ $spec.envVar }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "openclaw.secretName" $ }}
+                  key: {{ $spec.secretKey }}
+                  optional: true
+            {{- end }}
+          ports:
+            - name: gateway
+              containerPort: {{ .Values.gateway.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /home/node/.openclaw
+              subPath: openclaw-state
+            - name: data
+              mountPath: /home/node/.openclaw/workspace
+              subPath: openclaw-workspace
+            - name: tmp
+              mountPath: /tmp
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            {{- omit .Values.startupProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- with .Values.lifecycle }}
+          lifecycle:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+        {{- with .Values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if or .Values.config.create .Values.config.existingConfigMap }}
+        - name: config
+          configMap:
+            name: {{ include "openclaw.configMapName" . }}
+        {{- end }}
+        - name: tmp
+          emptyDir: {}
+        {{- if not .Values.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        {{- with .Values.persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          - {{ .Values.persistence.accessMode }}
+        {{- if .Values.persistence.storageClass }}
+        storageClassName: {{ .Values.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+  {{- end }}

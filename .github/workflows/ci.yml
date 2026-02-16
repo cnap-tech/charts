@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Discover charts
+        id: charts
+        run: |
+          charts=$(find . -name Chart.yaml -exec dirname {} \; | sort)
+          echo "Found charts:"
+          echo "$charts"
+          echo "charts<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$charts" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Lint charts
+        run: |
+          while IFS= read -r chart; do
+            [ -z "$chart" ] && continue
+            echo "::group::helm lint $chart"
+            helm lint "$chart" --strict
+            echo "::endgroup::"
+          done <<< "${{ steps.charts.outputs.charts }}"
+
+      - name: Template charts (default values)
+        run: |
+          while IFS= read -r chart; do
+            [ -z "$chart" ] && continue
+            name=$(basename "$chart")
+            echo "::group::helm template $chart"
+            helm template "test-$name" "$chart" > /dev/null
+            echo "::endgroup::"
+          done <<< "${{ steps.charts.outputs.charts }}"
+
+  changed:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Diff changed charts
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          changed_charts=$(git diff --name-only "$base" HEAD -- '*/Chart.yaml' '**/templates/*' '**/values.yaml' | xargs -I{} dirname {} | sort -u)
+
+          if [ -z "$changed_charts" ]; then
+            echo "No chart changes detected"
+            exit 0
+          fi
+
+          echo "Changed charts:"
+          echo "$changed_charts"
+
+          for chart_dir in $changed_charts; do
+            # Walk up to find the Chart.yaml
+            dir="$chart_dir"
+            while [ "$dir" != "." ] && [ ! -f "$dir/Chart.yaml" ]; do
+              dir=$(dirname "$dir")
+            done
+            [ ! -f "$dir/Chart.yaml" ] && continue
+
+            echo "::group::helm template $dir (changed)"
+            helm template "test-$(basename "$dir")" "$dir"
+            echo "::endgroup::"
+          done
