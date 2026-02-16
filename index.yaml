@@ -11,4 +11,70 @@ entries:
     urls:
     - https://github.com/cnap-tech/charts/releases/download/app-1.0.0/app-1.0.0.tgz
     version: 1.0.0
-generated: "2025-12-15T14:16:42.077744153Z"
+  gateway-cilium:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-02-16T23:14:18.808233832Z"
+    description: Cilium Gateway for Kubernetes Gateway API (Host Network Mode)
+    digest: 4f929c31c5eeaa5f0f4fe5bbc3475d039593f085b5f2ef703b2eb0d6e8ddf53a
+    home: https://cnap.tech
+    keywords:
+    - gateway-api
+    - cilium
+    - ebpf
+    - ingress
+    - host-network
+    name: gateway-cilium
+    sources:
+    - https://github.com/cnap-tech/charts
+    - https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/gateway-cilium-1.0.0/gateway-cilium-1.0.0.tgz
+    version: 1.0.0
+  gateway-cloudflare:
+  - apiVersion: v2
+    appVersion: 0.8.1
+    created: "2026-02-16T23:14:18.92620624Z"
+    description: Cloudflare Tunnel Gateway for Kubernetes Gateway API
+    digest: 37e71b4c3397402282873bf82d48c6da8dd5dcbb5b594321da50ac47ae778bae
+    home: https://cnap.tech
+    keywords:
+    - gateway-api
+    - cloudflare
+    - tunnel
+    - zero-trust
+    - ingress
+    name: gateway-cloudflare
+    sources:
+    - https://github.com/cnap-tech/charts
+    - https://github.com/pl4nty/cloudflare-kubernetes-gateway
+    - https://github.com/lwijnsma/cloudflare-kubernetes-gateway
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/gateway-cloudflare-1.0.0/gateway-cloudflare-1.0.0.tgz
+    version: 1.0.0
+  openclaw:
+  - apiVersion: v2
+    appVersion: 2026.2.15
+    created: "2026-02-16T23:14:19.057853325Z"
+    description: Deploy OpenClaw AI agents on Kubernetes with production-ready defaults
+    digest: a1ea4490ede2f7b44cfc6317ade27f767c202aa2bddf1042118fcd97d03b8095
+    home: https://cnap.tech/selfhost/openclaw
+    keywords:
+    - ai
+    - assistant
+    - openclaw
+    - claude
+    maintainers:
+    - name: CNAP
+      url: https://cnap.tech
+    name: openclaw
+    sources:
+    - https://github.com/cnap-tech/charts
+    - https://github.com/openclaw/openclaw
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/openclaw-0.1.0/openclaw-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-02-16T23:14:19.057865919Z"
