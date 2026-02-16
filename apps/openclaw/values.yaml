@@ -91,6 +91,18 @@ service:
   port: 18789
   annotations: {}
 
+# HTTPRoute (Gateway API)
+# Enable to expose OpenClaw via a Gateway API gateway.
+# Works with any Gateway API implementation (Cloudflare Tunnel, Cilium, Envoy, nginx, etc.)
+httpRoute:
+  enabled: false
+  annotations: {}
+  # parentRefs:
+  #   - name: my-gateway
+  #     namespace: default
+  hostnames: []
+  # - openclaw.example.com
+
 # Resources
 resources:
   requests:
