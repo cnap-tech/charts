@@ -1,0 +1,9 @@
+# Artifact Hub repository metadata
+# https://artifacthub.io/docs/topics/repositories/
+#
+# After registering at artifacthub.io, set repositoryID to the assigned value
+# to enable verified publisher status.
+# repositoryID:
+owners:
+  - name: cnap-tech
+    email: hello@cnap.tech

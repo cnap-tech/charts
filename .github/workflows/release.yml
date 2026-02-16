@@ -37,3 +37,13 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
+      - name: Sync artifacthub-repo.yml to gh-pages
+        run: |
+          git fetch origin gh-pages
+          git checkout gh-pages
+          git checkout main -- artifacthub-repo.yml
+          if ! git diff --quiet --cached; then
+            git commit -m "chore: sync artifacthub-repo.yml from main"
+            git push origin gh-pages
+          fi
+
