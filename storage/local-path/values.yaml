@@ -1,0 +1,55 @@
+# Local Path Provisioner Configuration
+# Reference: https://github.com/rancher/local-path-provisioner
+#
+# Creates a StorageClass that provisions PersistentVolumes using local disk.
+# Best for development, CI, and single-node clusters.
+
+# StorageClass configuration
+storageClass:
+  # StorageClass name
+  name: local-path
+  # Set as default StorageClass
+  isDefault: true
+  # Reclaim policy: Delete or Retain
+  reclaimPolicy: Delete
+  # Volume binding mode: WaitForFirstConsumer or Immediate
+  volumeBindingMode: WaitForFirstConsumer
+
+# Provisioner configuration
+provisioner:
+  # Container image
+  image:
+    repository: rancher/local-path-provisioner
+    tag: 'v0.0.34'
+    pullPolicy: IfNotPresent
+  # Replica count
+  replicas: 1
+  # Resource limits
+  resources:
+    limits:
+      cpu: 200m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 64Mi
+
+# Node path configuration
+# Where volumes are stored on the host
+nodePathMap:
+  # Default path for all nodes
+  defaultPath: /opt/local-path-provisioner
+  # Per-node overrides (optional)
+  # nodes:
+  #   - node1:
+  #       paths:
+  #         - /data/local-path
+
+# Helper image for setup/teardown operations
+helperPod:
+  image:
+    repository: busybox
+    tag: '1.37.0'
+
+# Name overrides
+nameOverride: ''
+fullnameOverride: ''

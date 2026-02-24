@@ -1,0 +1,15 @@
+apiVersion: v2
+name: storage-local-path
+description: Local Path Provisioner for single-node persistent storage
+type: application
+version: 1.0.0
+appVersion: '0.0.34'
+keywords:
+  - storage
+  - local-path
+  - provisioner
+  - persistent-volume
+home: https://cnap.tech
+sources:
+  - https://github.com/cnap-tech/charts
+  - https://github.com/rancher/local-path-provisioner

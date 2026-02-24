@@ -1,0 +1,36 @@
+# Piraeus (LINSTOR) Storage Configuration
+# Reference: https://github.com/piraeusdatastore/piraeus-operator
+#
+# Deploys the Piraeus Operator + LINSTOR Cluster for replicated block storage.
+# File-backed thin pool — no dedicated disks required.
+
+# --- Subchart values passthrough ---
+
+# piraeus-operator subchart (aliased from "piraeus")
+# Installs the operator CRDs + controller
+piraeus-operator:
+  installCRDs: true
+
+# linstor-cluster subchart
+# Creates LinstorCluster + LinstorSatelliteConfiguration + StorageClass
+linstor-cluster:
+  # Satellite configuration: file-backed thin pool on each node
+  linstorSatelliteConfigurations:
+    - name: pool-config
+      storagePools:
+        - name: pool1
+          fileThinPool:
+            directory: /var/lib/piraeus-datastore/pool1
+
+  # Default StorageClass for workloads
+  storageClasses:
+    - name: piraeus-storage
+      annotations:
+        storageclass.kubernetes.io/is-default-class: 'true'
+      reclaimPolicy: Delete
+      allowVolumeExpansion: true
+      volumeBindingMode: WaitForFirstConsumer
+      provisioner: linstor.csi.linbit.com
+      parameters:
+        linstor.csi.linbit.com/storagePool: pool1
+        linstor.csi.linbit.com/autoPlace: '1'
