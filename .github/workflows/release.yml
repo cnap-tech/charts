@@ -38,6 +38,13 @@ jobs:
           tar -xzf cr.tar.gz cr
           mv cr /usr/local/bin/cr
 
+      - name: Build chart dependencies
+        run: |
+          for chart in $(find . -name Chart.lock -not -path './.git/*' -exec dirname {} \;); do
+            echo "Building dependencies for $chart"
+            helm dependency build "$chart"
+          done
+
       # chart-releaser-action only discovers immediate children of charts_dir.
       # Our charts live in nested directories (app/, apps/openclaw/, gateways/*/),
       # so we find, package, and release them manually.
