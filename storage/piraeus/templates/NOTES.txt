@@ -1,0 +1,8 @@
+Piraeus (LINSTOR) storage has been deployed.
+
+Resources created by subcharts:
+  - LinstorCluster (piraeus operator deploys controller + satellites)
+  - LinstorSatelliteConfiguration (file-backed thin pool)
+  - StorageClass (default storage class for workloads)
+
+It may take a few minutes for the operator to become fully ready.

@@ -28,6 +28,17 @@ jobs:
           echo "$charts" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
+      - name: Build dependencies
+        run: |
+          while IFS= read -r chart; do
+            [ -z "$chart" ] && continue
+            if [ -f "$chart/Chart.lock" ]; then
+              echo "::group::helm dependency build $chart"
+              helm dependency build "$chart"
+              echo "::endgroup::"
+            fi
+          done <<< "${{ steps.charts.outputs.charts }}"
+
       - name: Lint charts
         run: |
           while IFS= read -r chart; do
@@ -79,6 +90,13 @@ jobs:
               dir=$(dirname "$dir")
             done
             [ ! -f "$dir/Chart.yaml" ] && continue
+
+            # Build dependencies if Chart.lock exists
+            if [ -f "$dir/Chart.lock" ]; then
+              echo "::group::helm dependency build $dir"
+              helm dependency build "$dir"
+              echo "::endgroup::"
+            fi
 
             echo "::group::helm template $dir (changed)"
             helm template "test-$(basename "$dir")" "$dir"
