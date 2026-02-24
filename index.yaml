@@ -77,4 +77,55 @@ entries:
     urls:
     - https://github.com/cnap-tech/charts/releases/download/openclaw-0.1.0/openclaw-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-16T23:14:19.057865919Z"
+  storage-local-path:
+  - apiVersion: v2
+    appVersion: 0.0.34
+    created: "2026-02-24T10:41:02.949465573Z"
+    description: Local Path Provisioner for single-node persistent storage
+    digest: 9c9cdcaf99a95c5ff977c1e4b873545c99098805cc3cf086f471cfea56130845
+    home: https://cnap.tech
+    keywords:
+    - storage
+    - local-path
+    - provisioner
+    - persistent-volume
+    name: storage-local-path
+    sources:
+    - https://github.com/cnap-tech/charts
+    - https://github.com/rancher/local-path-provisioner
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/storage-local-path-1.0.0/storage-local-path-1.0.0.tgz
+    version: 1.0.0
+  storage-piraeus:
+  - apiVersion: v2
+    appVersion: 2.10.4
+    created: "2026-02-24T10:41:03.138391688Z"
+    dependencies:
+    - alias: piraeus-operator
+      name: piraeus
+      repository: oci://ghcr.io/piraeusdatastore/piraeus-operator
+      version: 2.10.4
+    - name: linstor-cluster
+      repository: oci://ghcr.io/piraeusdatastore/helm-charts
+      version: 1.1.1
+    description: Piraeus (LINSTOR) replicated block storage with automatic failover
+    digest: 859bcc253c01d18905a09d0291d7e0c9ce8d989d710d2307844672439d362f94
+    home: https://cnap.tech
+    keywords:
+    - storage
+    - piraeus
+    - linstor
+    - replicated
+    - block-storage
+    - csi
+    name: storage-piraeus
+    sources:
+    - https://github.com/cnap-tech/charts
+    - https://github.com/piraeusdatastore/piraeus-operator
+    - https://linbit.com/linstor/
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/storage-piraeus-1.0.0/storage-piraeus-1.0.0.tgz
+    version: 1.0.0
+generated: "2026-02-24T10:41:03.138402628Z"
