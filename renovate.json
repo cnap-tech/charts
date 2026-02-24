@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "postUpdateOptions": ["helmUpdateSubChartArchives"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update appVersion in local-path Chart.yaml to match provisioner image",
+      "managerFilePatterns": ["storage/local-path/Chart\\.yaml$"],
+      "matchStrings": ["appVersion: '(?<currentValue>[^']+)'"],
+      "depNameTemplate": "rancher/local-path-provisioner",
+      "datasourceTemplate": "docker",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Use helm versioning for OCI chart dependencies",
+      "matchManagers": ["helmv3"],
+      "matchDatasources": ["docker"],
+      "versioning": "helm"
+    },
+    {
+      "description": "Group local-path-provisioner image tag and appVersion",
+      "matchPackageNames": ["rancher/local-path-provisioner"],
+      "groupName": "local-path-provisioner"
+    },
+    {
+      "description": "Group Piraeus storage dependencies",
+      "matchManagers": ["helmv3"],
+      "matchPackagePatterns": ["piraeusdatastore"],
+      "groupName": "piraeus"
+    },
+    {
+      "description": "Ignore empty or latest tags (no version to track)",
+      "matchCurrentValue": "/^(latest)?$/",
+      "enabled": false
+    }
+  ]
+}
