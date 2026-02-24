@@ -1,0 +1,51 @@
+# Deployment for Local Path Provisioner
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "storage-local-path.fullname" . }}
+  namespace: {{ include "storage-local-path.namespace" . }}
+  labels:
+    {{- include "storage-local-path.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.provisioner.replicas }}
+  selector:
+    matchLabels:
+      {{- include "storage-local-path.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "storage-local-path.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "storage-local-path.fullname" . }}
+      containers:
+        - name: local-path-provisioner
+          image: {{ include "storage-local-path.provisionerImage" . }}
+          imagePullPolicy: {{ .Values.provisioner.image.pullPolicy }}
+          command:
+            - local-path-provisioner
+            - --debug
+            - start
+            - --config
+            - /etc/config/config.json
+            - --service-account-name
+            - {{ include "storage-local-path.fullname" . }}
+            - --provisioner-name
+            - rancher.io/local-path
+            - --helper-image
+            - {{ .Values.helperPod.image.repository }}:{{ .Values.helperPod.image.tag }}
+            - --configmap-name
+            - {{ include "storage-local-path.fullname" . }}-config
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config/
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            {{- toYaml .Values.provisioner.resources | nindent 12 }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "storage-local-path.fullname" . }}-config

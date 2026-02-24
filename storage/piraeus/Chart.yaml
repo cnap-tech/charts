@@ -1,0 +1,26 @@
+apiVersion: v2
+name: storage-piraeus
+description: Piraeus (LINSTOR) replicated block storage with automatic failover
+type: application
+version: 1.0.0
+appVersion: '2.10.4'
+keywords:
+  - storage
+  - piraeus
+  - linstor
+  - replicated
+  - block-storage
+  - csi
+home: https://cnap.tech
+sources:
+  - https://github.com/cnap-tech/charts
+  - https://github.com/piraeusdatastore/piraeus-operator
+  - https://linbit.com/linstor/
+dependencies:
+  - name: piraeus
+    version: '2.10.4'
+    repository: 'oci://ghcr.io/piraeusdatastore/piraeus-operator'
+    alias: piraeus-operator
+  - name: linstor-cluster
+    version: '1.1.1'
+    repository: 'oci://ghcr.io/piraeusdatastore/helm-charts'

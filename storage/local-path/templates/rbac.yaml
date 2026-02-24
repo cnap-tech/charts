@@ -1,0 +1,45 @@
+# ServiceAccount for Local Path Provisioner
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "storage-local-path.fullname" . }}
+  namespace: {{ include "storage-local-path.namespace" . }}
+  labels:
+    {{- include "storage-local-path.labels" . | nindent 4 }}
+---
+# ClusterRole for Local Path Provisioner
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "storage-local-path.fullname" . }}
+  labels:
+    {{- include "storage-local-path.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "persistentvolumeclaims", "configmaps", "pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "patch", "update", "delete"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "storage-local-path.fullname" . }}
+  labels:
+    {{- include "storage-local-path.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "storage-local-path.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "storage-local-path.fullname" . }}
+    namespace: {{ include "storage-local-path.namespace" . }}
