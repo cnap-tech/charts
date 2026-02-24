@@ -8,7 +8,8 @@
 
 # piraeus-operator subchart (aliased from "piraeus")
 # Installs the operator CRDs + controller
-piraeus-operator: {}
+piraeus-operator:
+  installCRDs: true
 
 # linstor-cluster subchart
 # Creates LinstorCluster + LinstorSatelliteConfiguration + StorageClass
