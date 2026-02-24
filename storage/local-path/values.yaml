@@ -20,7 +20,7 @@ provisioner:
   # Container image
   image:
     repository: rancher/local-path-provisioner
-    tag: 'v0.0.30'
+    tag: 'v0.0.34'
     pullPolicy: IfNotPresent
   # Replica count
   replicas: 1
@@ -48,7 +48,7 @@ nodePathMap:
 helperPod:
   image:
     repository: busybox
-    tag: 'latest'
+    tag: '1.37.0'
 
 # Name overrides
 nameOverride: ''
