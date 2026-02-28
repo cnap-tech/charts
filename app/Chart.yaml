@@ -3,4 +3,4 @@ name: app
 description: Generic Helm chart for deploying Docker containers
 type: application
 version: 1.0.0
-appVersion: '1.0.0'
+appVersion: 'latest'
