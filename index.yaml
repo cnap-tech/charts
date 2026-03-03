@@ -1,6 +1,21 @@
 apiVersion: v1
 entries:
   app:
+  - annotations:
+      artifacthub.io/images: |
+        - name: app
+          image: nginx:latest
+          whitelisted: true
+    apiVersion: v2
+    appVersion: latest
+    created: "2026-03-03T11:13:19.306926007Z"
+    description: Generic Helm chart for deploying Docker containers
+    digest: 949a6acaca4a2d2ad3fbb6e2d28f01d3eb696fdf714375138111d9d7ab868ac1
+    name: app
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/app-1.0.1/app-1.0.1.tgz
+    version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2025-12-15T14:16:42.077706072Z"
@@ -128,4 +143,4 @@ entries:
     urls:
     - https://github.com/cnap-tech/charts/releases/download/storage-piraeus-1.0.0/storage-piraeus-1.0.0.tgz
     version: 1.0.0
-generated: "2026-02-24T10:41:03.138402628Z"
+generated: "2026-03-03T11:13:20.524231623Z"
