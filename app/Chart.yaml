@@ -2,5 +2,10 @@ apiVersion: v2
 name: app
 description: Generic Helm chart for deploying Docker containers
 type: application
-version: 1.0.0
+version: 1.0.1
 appVersion: 'latest'
+annotations:
+  artifacthub.io/images: |
+    - name: app
+      image: nginx:latest
+      whitelisted: true
