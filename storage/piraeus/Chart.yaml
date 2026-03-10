@@ -18,7 +18,7 @@ sources:
   - https://linbit.com/linstor/
 dependencies:
   - name: piraeus
-    version: '2.10.4'
+    version: '2.10.5'
     repository: 'oci://ghcr.io/piraeusdatastore/piraeus-operator'
     alias: piraeus-operator
   - name: linstor-cluster
