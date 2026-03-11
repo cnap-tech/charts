@@ -2,7 +2,7 @@ apiVersion: v2
 name: app
 description: Generic Helm chart for deploying Docker containers
 type: application
-version: 1.0.1
+version: 1.1.0
 appVersion: 'latest'
 annotations:
   artifacthub.io/images: |

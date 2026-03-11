@@ -112,7 +112,18 @@ autoscaling:
   maxReplicas: 10
   targetCPUUtilizationPercentage: 80
 
-# Storage
+# Persistence — managed PVCs created from values
+# Each volume entry creates a PersistentVolumeClaim and wires a volumeMount + volume
+persistence:
+  enabled: false
+  volumes: []
+    # - name: data
+    #   mountPath: /var/data
+    #   size: 10Gi
+    #   storageClassName: fast-ssd   # optional — omit to use cluster default
+    #   accessMode: ReadWriteOnce    # ReadWriteOnce | ReadWriteMany | ReadOnlyMany
+
+# Storage — raw volume/volumeMount passthrough (advanced)
 volumes: []
 volumeMounts: []
 
