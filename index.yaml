@@ -114,6 +114,25 @@ entries:
     version: 0.1.0
   storage-local-path:
   - apiVersion: v2
+    appVersion: 0.0.35
+    created: "2026-03-17T09:05:28.279728501Z"
+    description: Local Path Provisioner for single-node persistent storage
+    digest: f622e993cbcab3425a811702051c4f8dc3bfe60d8ccbcdc08e5af64f7e031bc5
+    home: https://cnap.tech
+    keywords:
+    - storage
+    - local-path
+    - provisioner
+    - persistent-volume
+    name: storage-local-path
+    sources:
+    - https://github.com/cnap-tech/charts
+    - https://github.com/rancher/local-path-provisioner
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/storage-local-path-1.0.1/storage-local-path-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
     appVersion: 0.0.34
     created: "2026-02-24T10:41:02.949465573Z"
     description: Local Path Provisioner for single-node persistent storage
@@ -133,6 +152,36 @@ entries:
     - https://github.com/cnap-tech/charts/releases/download/storage-local-path-1.0.0/storage-local-path-1.0.0.tgz
     version: 1.0.0
   storage-piraeus:
+  - apiVersion: v2
+    appVersion: 2.10.5
+    created: "2026-03-17T09:05:28.524897236Z"
+    dependencies:
+    - alias: piraeus-operator
+      name: piraeus
+      repository: oci://ghcr.io/piraeusdatastore/piraeus-operator
+      version: 2.10.5
+    - name: linstor-cluster
+      repository: oci://ghcr.io/piraeusdatastore/helm-charts
+      version: 1.1.1
+    description: Piraeus (LINSTOR) replicated block storage with automatic failover
+    digest: c0a63f07b5ae84595be4406d2b98653069f32121e1541595d6dcacbb495c3f58
+    home: https://cnap.tech
+    keywords:
+    - storage
+    - piraeus
+    - linstor
+    - replicated
+    - block-storage
+    - csi
+    name: storage-piraeus
+    sources:
+    - https://github.com/cnap-tech/charts
+    - https://github.com/piraeusdatastore/piraeus-operator
+    - https://linbit.com/linstor/
+    type: application
+    urls:
+    - https://github.com/cnap-tech/charts/releases/download/storage-piraeus-1.0.1/storage-piraeus-1.0.1.tgz
+    version: 1.0.1
   - apiVersion: v2
     appVersion: 2.10.4
     created: "2026-02-24T10:41:03.138391688Z"
@@ -163,4 +212,4 @@ entries:
     urls:
     - https://github.com/cnap-tech/charts/releases/download/storage-piraeus-1.0.0/storage-piraeus-1.0.0.tgz
     version: 1.0.0
-generated: "2026-03-11T13:10:14.012639664Z"
+generated: "2026-03-17T09:05:28.524917382Z"
