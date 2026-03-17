@@ -2,8 +2,8 @@ apiVersion: v2
 name: storage-piraeus
 description: Piraeus (LINSTOR) replicated block storage with automatic failover
 type: application
-version: 1.0.0
-appVersion: '2.10.4'
+version: 1.0.1
+appVersion: '2.10.5'
 keywords:
   - storage
   - piraeus

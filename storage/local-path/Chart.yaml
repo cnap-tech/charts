@@ -2,8 +2,8 @@ apiVersion: v2
 name: storage-local-path
 description: Local Path Provisioner for single-node persistent storage
 type: application
-version: 1.0.0
-appVersion: '0.0.34'
+version: 1.0.1
+appVersion: '0.0.35'
 keywords:
   - storage
   - local-path
