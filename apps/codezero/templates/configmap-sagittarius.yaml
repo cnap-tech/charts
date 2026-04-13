@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-sagittarius-config
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+data:
+  sagittarius.yml: |
+    rails:
+      web:
+        force_ssl: false
+      log_level: info
+      threads: 3
+      db:
+        host: {{ include "codezero.postgresHost" . | quote }}
+        port: "5432"

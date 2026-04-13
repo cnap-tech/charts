@@ -1,0 +1,177 @@
+{{- if .Values.runtime.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-nats
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nats
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: nats
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: nats
+    spec:
+      containers:
+        - name: nats
+          image: {{ .Values.nats.image }}
+          args: ["-js"]
+          ports:
+            - containerPort: 4222
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-aquila
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: aquila
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: aquila
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: aquila
+    spec:
+      containers:
+        - name: aquila
+          image: {{ .Values.image.registry }}/aquila:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MODE
+              value: dynamic
+            - name: NATS_URL
+              value: nats://{{ .Release.Name }}-nats:4222
+            - name: NATS_BUCKET
+              value: flow_store
+            - name: GRPC_HOST
+              value: "0.0.0.0"
+            - name: SAGITTARIUS_URL
+              value: {{ .Values.runtime.aquila.sagittariusUrl | default (printf "http://%s-nginx:80" .Release.Name) }}
+            - name: RUNTIME_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-codezero
+                  key: AQUILA_SAGITTARIUS_TOKEN
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-taurus
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: taurus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: taurus
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: taurus
+    spec:
+      containers:
+        - name: taurus
+          image: {{ .Values.image.registry }}/taurus:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MODE
+              value: dynamic
+            - name: AQUILA_URL
+              value: http://{{ .Release.Name }}-aquila:8081
+            - name: NATS_URL
+              value: nats://{{ .Release.Name }}-nats:4222
+            - name: DEFINITION_PATH
+              value: /definitions
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-draco-rest
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: draco-rest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: draco-rest
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: draco-rest
+    spec:
+      containers:
+        - name: draco-rest
+          image: {{ .Values.image.registry }}/draco:{{ .Values.image.tag }}-rest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.runtime.draco.rest.port }}
+          env:
+            - name: MODE
+              value: dynamic
+            - name: AQUILA_URL
+              value: http://{{ .Release.Name }}-aquila:8081
+            - name: NATS_URL
+              value: nats://{{ .Release.Name }}-nats:4222
+            - name: NATS_BUCKET
+              value: flow_store
+            - name: DEFINITION_PATH
+              value: /definitions
+            - name: HTTP_SERVER_PORT
+              value: {{ .Values.runtime.draco.rest.port | quote }}
+            - name: HTTP_SERVER_HOST
+              value: "0.0.0.0"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-draco-cron
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: draco-cron
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: draco-cron
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: draco-cron
+    spec:
+      containers:
+        - name: draco-cron
+          image: {{ .Values.image.registry }}/draco:{{ .Values.image.tag }}-cron
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MODE
+              value: dynamic
+            - name: AQUILA_URL
+              value: http://{{ .Release.Name }}-aquila:8081
+            - name: NATS_URL
+              value: nats://{{ .Release.Name }}-nats:4222
+            - name: NATS_BUCKET
+              value: flow_store
+            - name: DEFINITION_PATH
+              value: /definitions
+{{- end }}
