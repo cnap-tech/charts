@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sculptor
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sculptor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: sculptor
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: sculptor
+    spec:
+      containers:
+        - name: sculptor
+          image: {{ include "codezero.sculptorImage" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          resources:
+            {{- toYaml .Values.resources.sculptor | nindent 12 }}

@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgres
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+spec:
+  selector:
+    {{- include "codezero.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-sagittarius-web
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sagittarius-web
+spec:
+  selector:
+    {{- include "codezero.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: sagittarius-web
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-sagittarius-grpc
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sagittarius-grpc
+spec:
+  selector:
+    {{- include "codezero.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: sagittarius-grpc
+  ports:
+    - port: 50051
+      targetPort: 50051
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-sculptor
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sculptor
+spec:
+  selector:
+    {{- include "codezero.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: sculptor
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-nginx
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+spec:
+  selector:
+    {{- include "codezero.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+{{- if .Values.runtime.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-nats
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nats
+spec:
+  selector:
+    {{- include "codezero.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: nats
+  ports:
+    - port: 4222
+      targetPort: 4222
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-aquila
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: aquila
+spec:
+  selector:
+    {{- include "codezero.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: aquila
+  ports:
+    - port: 8081
+      targetPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-draco-rest
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: draco-rest
+spec:
+  selector:
+    {{- include "codezero.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: draco-rest
+  ports:
+    - port: {{ .Values.runtime.draco.rest.port }}
+      targetPort: {{ .Values.runtime.draco.rest.port }}
+{{- end }}

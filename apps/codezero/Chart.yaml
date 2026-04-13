@@ -1,0 +1,18 @@
+apiVersion: v2
+name: codezero
+description: CodeZero — no-code workflow automation & AI orchestration platform
+type: application
+version: 0.1.0
+appVersion: 'canary'
+home: https://codezero.build
+sources:
+  - https://github.com/code0-tech/codezero
+maintainers:
+  - name: CNAP Technologies
+    url: https://cnap.tech
+keywords:
+  - automation
+  - workflow
+  - no-code
+  - ai
+  - orchestration

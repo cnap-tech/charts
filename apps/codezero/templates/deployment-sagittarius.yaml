@@ -1,0 +1,142 @@
+{{- $sagittariusImage := include "codezero.sagittariusImage" . -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sagittarius-web
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sagittarius-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: sagittarius-web
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: sagittarius-web
+    spec:
+      containers:
+        - name: sagittarius-web
+          image: {{ $sagittariusImage }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              cp /tmp/config/sagittarius.yml config/sagittarius.yml
+              exec bin/docker-entrypoint ./bin/rails server
+          ports:
+            - containerPort: 3000
+          env:
+            - name: INITIAL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-codezero
+                  key: INITIAL_ROOT_PASSWORD
+            - name: INITIAL_ROOT_MAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-codezero
+                  key: INITIAL_ROOT_MAIL
+          volumeMounts:
+            - name: sagittarius-config
+              mountPath: /tmp/config
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            {{- toYaml .Values.resources.sagittarius | nindent 12 }}
+      volumes:
+        - name: sagittarius-config
+          configMap:
+            name: {{ .Release.Name }}-sagittarius-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sagittarius-background
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sagittarius-background
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: sagittarius-background
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: sagittarius-background
+    spec:
+      containers:
+        - name: sagittarius-background
+          image: {{ $sagittariusImage }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              cp /tmp/config/sagittarius.yml config/sagittarius.yml
+              exec bin/docker-entrypoint bundle exec good_job
+          volumeMounts:
+            - name: sagittarius-config
+              mountPath: /tmp/config
+          resources:
+            {{- toYaml .Values.resources.sagittarius | nindent 12 }}
+      volumes:
+        - name: sagittarius-config
+          configMap:
+            name: {{ .Release.Name }}-sagittarius-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-sagittarius-grpc
+  labels:
+    {{- include "codezero.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sagittarius-grpc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "codezero.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: sagittarius-grpc
+  template:
+    metadata:
+      labels:
+        {{- include "codezero.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: sagittarius-grpc
+    spec:
+      containers:
+        - name: sagittarius-grpc
+          image: {{ $sagittariusImage }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              cp /tmp/config/sagittarius.yml config/sagittarius.yml
+              exec bin/docker-entrypoint ./bin/grpc_server
+          ports:
+            - containerPort: 50051
+          volumeMounts:
+            - name: sagittarius-config
+              mountPath: /tmp/config
+          resources:
+            {{- toYaml .Values.resources.sagittarius | nindent 12 }}
+      volumes:
+        - name: sagittarius-config
+          configMap:
+            name: {{ .Release.Name }}-sagittarius-config
