@@ -12,5 +12,5 @@ data:
       log_level: info
       threads: 3
       db:
-        host: {{ include "codezero.postgresHost" . }}
+        host: {{ include "codezero.postgresHost" . | quote }}
         port: "5432"

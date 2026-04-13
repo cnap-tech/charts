@@ -71,8 +71,8 @@ Config volume name
 {{- end }}
 
 {{/*
-Postgres connection details
+Postgres connection details — points to Bitnami subchart service
 */}}
 {{- define "codezero.postgresHost" -}}
-{{ .Release.Name }}-postgres
+{{ .Release.Name }}-postgresql
 {{- end }}

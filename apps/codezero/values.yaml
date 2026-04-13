@@ -13,15 +13,26 @@ admin:
   password: "root"
   email: "root@code0.tech"
 
-# -- PostgreSQL
+# -- PostgreSQL (Bitnami subchart)
 postgres:
-  image: postgres:16.1
-  database: sagittarius_production
-  user: sagittarius
-  password: sagittarius
-  storage:
-    size: 10Gi
-    # storageClassName: ""  # uses default if not set
+  enabled: true  # set to false to use an external database
+
+postgresql:
+  auth:
+    database: sagittarius_production
+    username: sagittarius
+    password: sagittarius
+  primary:
+    persistence:
+      size: 10Gi
+      # storageClass: ""  # uses default if not set
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
 
 # -- NATS (message broker for runtime)
 nats:
@@ -61,13 +72,6 @@ resources:
     requests:
       cpu: 50m
       memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-  postgres:
-    requests:
-      cpu: 100m
-      memory: 256Mi
     limits:
       cpu: 500m
       memory: 512Mi

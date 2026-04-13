@@ -16,3 +16,8 @@ keywords:
   - no-code
   - ai
   - orchestration
+dependencies:
+  - name: postgresql
+    version: "16.7.5"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgres.enabled
