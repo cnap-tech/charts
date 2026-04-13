@@ -30,17 +30,15 @@ spec:
               exec bin/docker-entrypoint ./bin/rails server
           ports:
             - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: {{ .Release.Name }}-codezero
           env:
-            - name: INITIAL_ROOT_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Release.Name }}-codezero
-                  key: INITIAL_ROOT_PASSWORD
-            - name: INITIAL_ROOT_MAIL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-codezero
-                  key: INITIAL_ROOT_MAIL
+                  name: {{ .Release.Name }}-postgresql
+                  key: password
           volumeMounts:
             - name: sagittarius-config
               mountPath: /tmp/config
@@ -91,6 +89,15 @@ spec:
             - |
               cp /tmp/config/sagittarius.yml config/sagittarius.yml
               exec bin/docker-entrypoint bundle exec good_job
+          envFrom:
+            - secretRef:
+                name: {{ .Release.Name }}-codezero
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: password
           volumeMounts:
             - name: sagittarius-config
               mountPath: /tmp/config
@@ -124,6 +131,15 @@ spec:
         - name: sagittarius-grpc
           image: {{ $sagittariusImage }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ .Release.Name }}-codezero
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-postgresql
+                  key: password
           command: ["sh", "-c"]
           args:
             - |
