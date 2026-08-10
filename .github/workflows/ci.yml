@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint-and-test:
-    runs-on: ubuntu-latest
+    runs-on: akua-x64-ci-v2
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -59,7 +59,7 @@ jobs:
           done <<< "${{ steps.charts.outputs.charts }}"
 
   changed:
-    runs-on: ubuntu-latest
+    runs-on: akua-x64-ci-v2
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
