@@ -14,7 +14,7 @@ entries:
     name: app
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/app-1.2.0/app-1.2.0.tgz
+    - https://github.com/akua-dev/charts/releases/download/app-1.2.0/app-1.2.0.tgz
     version: 1.2.0
   - annotations:
       artifacthub.io/images: |
@@ -29,7 +29,7 @@ entries:
     name: app
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/app-1.1.0/app-1.1.0.tgz
+    - https://github.com/akua-dev/charts/releases/download/app-1.1.0/app-1.1.0.tgz
     version: 1.1.0
   - annotations:
       artifacthub.io/images: |
@@ -44,7 +44,7 @@ entries:
     name: app
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/app-1.0.1/app-1.0.1.tgz
+    - https://github.com/akua-dev/charts/releases/download/app-1.0.1/app-1.0.1.tgz
     version: 1.0.1
   gateway-cilium:
   - apiVersion: v2
@@ -61,11 +61,11 @@ entries:
     - host-network
     name: gateway-cilium
     sources:
-    - https://github.com/cnap-tech/charts
+    - https://github.com/akua-dev/charts
     - https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/gateway-cilium-1.0.0/gateway-cilium-1.0.0.tgz
+    - https://github.com/akua-dev/charts/releases/download/gateway-cilium-1.0.0/gateway-cilium-1.0.0.tgz
     version: 1.0.0
   gateway-cloudflare:
   - apiVersion: v2
@@ -82,12 +82,12 @@ entries:
     - ingress
     name: gateway-cloudflare
     sources:
-    - https://github.com/cnap-tech/charts
+    - https://github.com/akua-dev/charts
     - https://github.com/pl4nty/cloudflare-kubernetes-gateway
     - https://github.com/lwijnsma/cloudflare-kubernetes-gateway
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/gateway-cloudflare-1.0.0/gateway-cloudflare-1.0.0.tgz
+    - https://github.com/akua-dev/charts/releases/download/gateway-cloudflare-1.0.0/gateway-cloudflare-1.0.0.tgz
     version: 1.0.0
   openclaw:
   - apiVersion: v2
@@ -106,11 +106,11 @@ entries:
       url: https://cnap.tech
     name: openclaw
     sources:
-    - https://github.com/cnap-tech/charts
+    - https://github.com/akua-dev/charts
     - https://github.com/openclaw/openclaw
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/openclaw-0.1.0/openclaw-0.1.0.tgz
+    - https://github.com/akua-dev/charts/releases/download/openclaw-0.1.0/openclaw-0.1.0.tgz
     version: 0.1.0
   storage-local-path:
   - apiVersion: v2
@@ -126,11 +126,11 @@ entries:
     - persistent-volume
     name: storage-local-path
     sources:
-    - https://github.com/cnap-tech/charts
+    - https://github.com/akua-dev/charts
     - https://github.com/rancher/local-path-provisioner
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/storage-local-path-1.0.1/storage-local-path-1.0.1.tgz
+    - https://github.com/akua-dev/charts/releases/download/storage-local-path-1.0.1/storage-local-path-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v2
     appVersion: 0.0.34
@@ -145,11 +145,11 @@ entries:
     - persistent-volume
     name: storage-local-path
     sources:
-    - https://github.com/cnap-tech/charts
+    - https://github.com/akua-dev/charts
     - https://github.com/rancher/local-path-provisioner
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/storage-local-path-1.0.0/storage-local-path-1.0.0.tgz
+    - https://github.com/akua-dev/charts/releases/download/storage-local-path-1.0.0/storage-local-path-1.0.0.tgz
     version: 1.0.0
   storage-piraeus:
   - apiVersion: v2
@@ -175,12 +175,12 @@ entries:
     - csi
     name: storage-piraeus
     sources:
-    - https://github.com/cnap-tech/charts
+    - https://github.com/akua-dev/charts
     - https://github.com/piraeusdatastore/piraeus-operator
     - https://linbit.com/linstor/
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/storage-piraeus-1.0.1/storage-piraeus-1.0.1.tgz
+    - https://github.com/akua-dev/charts/releases/download/storage-piraeus-1.0.1/storage-piraeus-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v2
     appVersion: 2.10.4
@@ -205,11 +205,11 @@ entries:
     - csi
     name: storage-piraeus
     sources:
-    - https://github.com/cnap-tech/charts
+    - https://github.com/akua-dev/charts
     - https://github.com/piraeusdatastore/piraeus-operator
     - https://linbit.com/linstor/
     type: application
     urls:
-    - https://github.com/cnap-tech/charts/releases/download/storage-piraeus-1.0.0/storage-piraeus-1.0.0.tgz
+    - https://github.com/akua-dev/charts/releases/download/storage-piraeus-1.0.0/storage-piraeus-1.0.0.tgz
     version: 1.0.0
 generated: "2026-03-17T09:05:28.524917382Z"
