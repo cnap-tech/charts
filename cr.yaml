@@ -2,7 +2,7 @@
 # Used by cr index to update the Helm repo index on gh-pages.
 # Packaging and releasing is handled by the workflow directly.
 
-owner: cnap-tech
+owner: akua-dev
 git-repo: charts
 pages-branch: gh-pages
 release-name-template: '{{ .Name }}-{{ .Version }}'

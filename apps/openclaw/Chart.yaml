@@ -6,7 +6,7 @@ version: 0.1.0
 appVersion: '2026.2.15'
 home: https://cnap.tech/selfhost/openclaw
 sources:
-  - https://github.com/cnap-tech/charts
+  - https://github.com/akua-dev/charts
   - https://github.com/openclaw/openclaw
 keywords:
   - ai

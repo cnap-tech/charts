@@ -43,7 +43,7 @@ Generic Helm chart for deploying any container image to Kubernetes.
 ### Quick Start
 
 ```bash
-git clone https://github.com/cnap-tech/charts.git
+git clone https://github.com/akua-dev/charts.git
 cd charts
 
 helm template myapp app \

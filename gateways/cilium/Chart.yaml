@@ -12,7 +12,7 @@ keywords:
   - host-network
 home: https://cnap.tech
 sources:
-  - https://github.com/cnap-tech/charts
+  - https://github.com/akua-dev/charts
   - https://docs.cilium.io/en/stable/network/servicemesh/gateway-api/gateway-api/
 
 

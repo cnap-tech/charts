@@ -13,7 +13,7 @@ keywords:
   - csi
 home: https://cnap.tech
 sources:
-  - https://github.com/cnap-tech/charts
+  - https://github.com/akua-dev/charts
   - https://github.com/piraeusdatastore/piraeus-operator
   - https://linbit.com/linstor/
 dependencies:

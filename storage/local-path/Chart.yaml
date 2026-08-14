@@ -11,5 +11,5 @@ keywords:
   - persistent-volume
 home: https://cnap.tech
 sources:
-  - https://github.com/cnap-tech/charts
+  - https://github.com/akua-dev/charts
   - https://github.com/rancher/local-path-provisioner

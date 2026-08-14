@@ -64,19 +64,50 @@ jobs:
           done
 
       - name: Create GitHub releases for new charts
-        run: |
-          for pkg in .cr-release-packages/*.tgz; do
-            [ -f "$pkg" ] || { echo "No charts found"; exit 0; }
-            tag=$(basename "$pkg" .tgz)
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('node:fs');
+            const path = require('node:path');
 
-            if gh release view "$tag" &>/dev/null; then
-              echo "Skipping $tag (already released)"
-              continue
-            fi
+            const packages = fs
+              .readdirSync('.cr-release-packages')
+              .filter((name) => name.endsWith('.tgz'))
+              .sort();
 
-            echo "Creating release $tag"
-            gh release create "$tag" "$pkg" --title "$tag" --generate-notes
-          done
+            for (const filename of packages) {
+              const tag = filename.slice(0, -'.tgz'.length);
+
+              try {
+                await github.rest.repos.getReleaseByTag({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  tag
+                });
+                core.info(`Release ${tag} already exists, skipping`);
+                continue;
+              } catch (error) {
+                if (error.status !== 404) throw error;
+              }
+
+              core.info(`Creating release ${tag}`);
+              const { data: release } = await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tag,
+                name: tag,
+                generate_release_notes: true
+              });
+
+              await github.rest.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.id,
+                name: filename,
+                data: fs.readFileSync(path.join('.cr-release-packages', filename))
+              });
+            }
 
       - name: Update Helm repo index
         run: |

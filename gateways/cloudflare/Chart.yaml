@@ -12,6 +12,6 @@ keywords:
   - ingress
 home: https://cnap.tech
 sources:
-  - https://github.com/cnap-tech/charts
+  - https://github.com/akua-dev/charts
   - https://github.com/pl4nty/cloudflare-kubernetes-gateway
   - https://github.com/lwijnsma/cloudflare-kubernetes-gateway
