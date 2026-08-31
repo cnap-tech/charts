@@ -1,9 +1,9 @@
 dependencies:
 - name: piraeus
   repository: oci://ghcr.io/piraeusdatastore/piraeus-operator
-  version: 2.10.5
+  version: 2.10.7
 - name: linstor-cluster
   repository: oci://ghcr.io/piraeusdatastore/helm-charts
   version: 1.1.1
-digest: sha256:6f5d964c5c9930f08c634b45c9bc8c4029b6e51e226bba6f6b59d651e12297f8
-generated: "2026-03-10T17:06:38.193404334Z"
+digest: sha256:f9adf7df851e6ba3418b800ae7a90feb64d492dbb7f5b61271c94430dd6ef6f7
+generated: "2026-05-23T01:10:23.02907078Z"
